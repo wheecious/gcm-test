@@ -1,0 +1,2 @@
+Flask==2.2.5
+google-cloud-monitoring==2.23.0
