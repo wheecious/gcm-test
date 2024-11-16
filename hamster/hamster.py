@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, jsonify
 
 from google.cloud import monitoring_v3
 
@@ -90,7 +90,7 @@ def show_index():
 
 @app.route('/json')
 def show_json():
-    return(successful_requests)
+    return(jsonify(successful_requests)
 
 
 if __name__ == "__main__":
