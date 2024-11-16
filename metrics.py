@@ -11,8 +11,7 @@ start_time = end_time - timedelta(hours=12)
 
 filter_successful_requests = (
     'metric.type="loadbalancing.googleapis.com/https/request_count" '
-    'AND metric.label."response_code" >= "200" '
-    'AND metric.label."response_code" < "400"'
+    'AND metric.label."response_code_class" = "200" '
 )
 
 filter_total_requests = (

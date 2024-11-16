@@ -6,24 +6,21 @@ from datetime import datetime, timedelta
 
 app = Flask(__name__)
 
-f = open('../project', 'r')
-
 client = monitoring_v3.MetricServiceClient()
-proj = f.read()
-print(f'projects/{proj}')
-project_name = f'projects/{proj}'
 
+f = open('../project', 'r')
+proj = f.read()
+project_name = f'projects/{proj.strip()}'
 f.close()
 
 #time range
 end_time = datetime.now()
 start_time = end_time - timedelta(hours=12)
 
-#2xx 3xx reqs filter
+#2xx filter
 filter_successful_requests = (
     'metric.type="loadbalancing.googleapis.com/https/request_count" '
-    'AND metric.label."response_code" >= "200" '
-    'AND metric.label."response_code" < "400"'
+    'AND metric.label."response_code_class" = "200" '
 )
 
 #>4xx reqs filter
