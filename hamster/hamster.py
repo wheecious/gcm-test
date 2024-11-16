@@ -88,6 +88,10 @@ def show_index():
     return render_template('index.html', total=total_count(),
                             success=success_count(), sli=sli)
 
+@app.route('/json')
+def show_json():
+    return(successful_requests)
+
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=8080) # nosec
