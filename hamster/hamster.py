@@ -9,7 +9,9 @@ app = Flask(__name__)
 f = open('../project', 'r')
 
 client = monitoring_v3.MetricServiceClient()
-project_name = f'projects/{f.read()}'
+proj = f.read()
+print(f'projects/{proj}')
+project_name = f'projects/{proj}'
 
 f.close()
 
