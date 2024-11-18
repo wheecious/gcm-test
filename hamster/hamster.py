@@ -40,7 +40,7 @@ def request_success():
             "end_time": {"seconds": int(end_time.timestamp())},
         },
         aggregation={
-            "alignment_period": {"seconds": 60},
+            "alignment_period": {"seconds": 3600},
             "per_series_aligner": monitoring_v3.Aggregation.Aligner.ALIGN_RATE,
         },
         view=monitoring_v3.ListTimeSeriesRequest.TimeSeriesView.FULL,
@@ -56,7 +56,7 @@ def request_total():
             "end_time": {"seconds": int(end_time.timestamp())},
         },
         aggregation={
-            "alignment_period": {"seconds": 60},
+            "alignment_period": {"seconds": 3600},
             "per_series_aligner": monitoring_v3.Aggregation.Aligner.ALIGN_RATE,
         },
         view=monitoring_v3.ListTimeSeriesRequest.TimeSeriesView.FULL,
@@ -64,10 +64,10 @@ def request_total():
     return reqs
 
 def count_requests(request):
-    reqs = []
-    for client in request:
-        for point in client.points:
-            reqs.append(to_rfc3339(point.interval.end_time))
+    reqs = 0
+    for entry in request:
+        for point in entry.points:
+            reqs += point.value.double_value
     return reqs
 
 
@@ -80,16 +80,14 @@ def health_check():
 def show_index():
     successful_requests = client.list_time_series(request=request_success())
     total_requests = client.list_time_series(request=request_total())
-    success_ts = count_requests(successful_requests)
-    success = len(success_ts)
-    total = len(count_requests(total_requests))
+    success = count_requests(successful_requests)
+    total = count_requests(total_requests)
 
     #calculate success vs total ratio
     sli = ( success / total ) * 100
 
     return render_template('index.html', total=total,
-                            success=success, sli=sli,
-                            success_ts=success_ts)
+                            success=success, sli=sli)
 
 
 if __name__ == "__main__":
