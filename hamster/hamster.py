@@ -15,6 +15,10 @@ proj = f.read()
 project_name = f'projects/{proj.strip()}'
 f.close()
 
+#time range
+end_time = datetime.now()
+start_time = end_time - timedelta(hours=12)
+
 #2xx filter
 filter_successful_requests = (
     'metric.type="loadbalancing.googleapis.com/https/request_count" '
