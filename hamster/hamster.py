@@ -41,7 +41,7 @@ def request_success():
         },
         aggregation={
             "alignment_period": {"seconds": 3600},
-            "per_series_aligner": monitoring_v3.Aggregation.Aligner.ALIGN_RATE,
+            "per_series_aligner": monitoring_v3.Aggregation.Aligner.ALIGN_SUM,
         },
         view=monitoring_v3.ListTimeSeriesRequest.TimeSeriesView.FULL,
     )
@@ -57,7 +57,7 @@ def request_total():
         },
         aggregation={
             "alignment_period": {"seconds": 3600},
-            "per_series_aligner": monitoring_v3.Aggregation.Aligner.ALIGN_RATE,
+            "per_series_aligner": monitoring_v3.Aggregation.Aligner.ALIGN_SUM,
         },
         view=monitoring_v3.ListTimeSeriesRequest.TimeSeriesView.FULL,
         )
