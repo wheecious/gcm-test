@@ -1,6 +1,8 @@
-from flask import Flask, render_template, jsonify
+from flask import Flask, render_template
 
 from google.cloud import monitoring_v3
+
+from google.api_core.datetime_helpers import to_rfc3339
 
 from datetime import datetime, timedelta
 
@@ -28,7 +30,7 @@ filter_total_requests = (
     'metric.type="loadbalancing.googleapis.com/https/request_count"'
 )
 
-#aggregate successfull reqs
+#aggregate successful reqs
 request_success = monitoring_v3.types.ListTimeSeriesRequest(
     name=project_name,
     filter=filter_successful_requests,
@@ -57,22 +59,13 @@ request_total = monitoring_v3.types.ListTimeSeriesRequest(
     view=monitoring_v3.ListTimeSeriesRequest.TimeSeriesView.FULL,
 )
 
-#get reqs data
-successful_requests = client.list_time_series(request=request_success)
-total_requests = client.list_time_series(request=request_total)
+def count_requests(request):
+    reqs = []
+    for client in request:
+        for point in client.points:
+            reqs.append(to_rfc3339(point.interval.end_time))
+    return reqs
 
-#count received reqs
-def success_count():
-    req = 0
-    for request in successful_requests:
-        req += 1
-    return(req)
-
-def total_count():
-    req = 0
-    for request in total_requests:
-        req += 1
-    return(req)
 
 #display flask pages
 @app.route('/')
@@ -81,16 +74,17 @@ def health_check():
 
 @app.route('/ratio')
 def show_index():
+    successful_requests = client.list_time_series(request=request_success)
+    total_requests = client.list_time_series(request=request_total)
+    success_ts = count_requests(successful_requests)
+    success = len(success_ts)
+    total = len(count_requests(total_requests))
 
     #calculate success vs total ratio
-    sli = (success_count() / total_count()) * 100
+    sli = ( success / total ) * 100
 
-    return render_template('index.html', total=total_count(),
-                            success=success_count(), sli=sli)
-
-@app.route('/json')
-def show_json():
-    return(jsonify(successful_requests)
+    return render_template('index.html', total=total,
+                            success=success, sli=sli)
 
 
 if __name__ == "__main__":
