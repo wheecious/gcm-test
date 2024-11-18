@@ -31,33 +31,37 @@ filter_total_requests = (
 )
 
 #aggregate successful reqs
-request_success = monitoring_v3.types.ListTimeSeriesRequest(
-    name=project_name,
-    filter=filter_successful_requests,
-    interval={
-        "start_time": {"seconds": int(start_time.timestamp())},
-        "end_time": {"seconds": int(end_time.timestamp())},
-    },
-    aggregation={
-        "alignment_period": {"seconds": 60},
-        "per_series_aligner": monitoring_v3.Aggregation.Aligner.ALIGN_RATE,
-    },
-    view=monitoring_v3.ListTimeSeriesRequest.TimeSeriesView.FULL,
-)
+def request_success():
+    reqs = monitoring_v3.types.ListTimeSeriesRequest(
+        name=project_name,
+        filter=filter_successful_requests,
+        interval={
+            "start_time": {"seconds": int(start_time.timestamp())},
+            "end_time": {"seconds": int(end_time.timestamp())},
+        },
+        aggregation={
+            "alignment_period": {"seconds": 60},
+            "per_series_aligner": monitoring_v3.Aggregation.Aligner.ALIGN_RATE,
+        },
+        view=monitoring_v3.ListTimeSeriesRequest.TimeSeriesView.FULL,
+    )
+    return reqs
 #aggregate all reqs
-request_total = monitoring_v3.types.ListTimeSeriesRequest(
-    name=project_name,
-    filter=filter_total_requests,
-    interval={
-        "start_time": {"seconds": int(start_time.timestamp())},
-        "end_time": {"seconds": int(end_time.timestamp())},
-    },
-    aggregation={
-        "alignment_period": {"seconds": 60},
-        "per_series_aligner": monitoring_v3.Aggregation.Aligner.ALIGN_RATE,
-    },
-    view=monitoring_v3.ListTimeSeriesRequest.TimeSeriesView.FULL,
-)
+def request_total():
+    reqs = monitoring_v3.types.ListTimeSeriesRequest(
+        name=project_name,
+        filter=filter_total_requests,
+        interval={
+            "start_time": {"seconds": int(start_time.timestamp())},
+            "end_time": {"seconds": int(end_time.timestamp())},
+        },
+        aggregation={
+            "alignment_period": {"seconds": 60},
+            "per_series_aligner": monitoring_v3.Aggregation.Aligner.ALIGN_RATE,
+        },
+        view=monitoring_v3.ListTimeSeriesRequest.TimeSeriesView.FULL,
+        )
+    return reqs
 
 def count_requests(request):
     reqs = []
@@ -74,8 +78,8 @@ def health_check():
 
 @app.route('/ratio')
 def show_index():
-    successful_requests = client.list_time_series(request=request_success)
-    total_requests = client.list_time_series(request=request_total)
+    successful_requests = client.list_time_series(request=request_success())
+    total_requests = client.list_time_series(request=request_total())
     success_ts = count_requests(successful_requests)
     success = len(success_ts)
     total = len(count_requests(total_requests))
