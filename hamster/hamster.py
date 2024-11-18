@@ -84,7 +84,8 @@ def show_index():
     sli = ( success / total ) * 100
 
     return render_template('index.html', total=total,
-                            success=success, sli=sli)
+                            success=success, sli=sli,
+                            success_ts=success_ts)
 
 
 if __name__ == "__main__":
