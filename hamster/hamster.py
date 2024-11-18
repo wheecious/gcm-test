@@ -15,10 +15,6 @@ proj = f.read()
 project_name = f'projects/{proj.strip()}'
 f.close()
 
-#time range
-end_time = datetime.now()
-start_time = end_time - timedelta(hours=12)
-
 #2xx filter
 filter_successful_requests = (
     'metric.type="loadbalancing.googleapis.com/https/request_count" '
@@ -78,6 +74,10 @@ def health_check():
 
 @app.route('/ratio')
 def show_index():
+    #time range
+    end_time = datetime.now()
+    start_time = end_time - timedelta(hours=12)
+
     successful_requests = client.list_time_series(request=request_success())
     total_requests = client.list_time_series(request=request_total())
     success = count_requests(successful_requests)
