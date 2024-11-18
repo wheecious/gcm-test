@@ -67,7 +67,7 @@ def count_requests(request):
     reqs = 0
     for entry in request:
         for point in entry.points:
-            reqs += point.value.double_value
+            reqs += point.value.int64_value
     return reqs
 
 
